@@ -2,8 +2,10 @@
 #![no_main]
 #![feature(global_asm)]
 #![feature(llvm_asm)]
+#![feature(panic_info_message)]
+use core::panic::PanicInfo;
 use core::fmt::{self, Write};
-mod lang_items;
+// mod lang_items;
 mod sbi;
 use crate::sbi::sbi_call;
 global_asm!(include_str!("entry.asm"));
@@ -19,6 +21,22 @@ fn clear_bss() {
 }
 
 const SBI_CONSOLE_PUTCHAR: usize = 1;
+const SBI_SHUTDOWN: usize = 8;
+
+#[panic_handler]
+fn panic(info: &PanicInfo) -> ! {
+    if let Some(location) = info.location() {
+        println!("Panicked at {}:{} {}", location.file(), location.line(), info.message().unwrap());
+    } else {
+        println!("Panicked: {}", info.message().unwrap());
+    }
+    shutdown()
+}
+
+pub fn shutdown() -> ! {
+    sbi_call(SBI_SHUTDOWN, 0, 0, 0);
+    panic!("It should shutdown!");
+}
 
 pub fn console_putchar(c: usize) {
     sbi_call(SBI_CONSOLE_PUTCHAR, c, 0, 0);
@@ -104,7 +122,7 @@ macro_rules! println {
 pub fn rust_main() -> ! {
     clear_bss();
     println!("Hello, world! buhe");
-    loop{}
+    panic!("It should shutdown!");
 }
 
 // // fn main() {
