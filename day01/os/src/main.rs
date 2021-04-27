@@ -121,7 +121,7 @@ macro_rules! println {
 #[no_mangle]
 pub fn rust_main() -> ! {
     clear_bss();
-    println!("Hello, world! buhe");
+    println!("Hello, world! buhe 0.1");
     panic!("It should shutdown!");
 }
 
