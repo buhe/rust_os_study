@@ -30,12 +30,15 @@
 # 保存 Context 并且进入 Rust 中的中断处理函数 interrupt::handler::handle_interrupt()
 __interrupt:
     # 在栈上开辟 Context 所需的空间
+    # 给 sp 也就是 x2 加 -34*8
     addi    sp, sp, -34*8
 
     # 保存通用寄存器，除了 x0（固定为 0）
     SAVE    x1, 1
     # 将原来的 sp（sp 又名 x2）写入 2 位置
+    # sp + 34*8 又回到原来的值并给 x1
     addi    x1, sp, 34*8
+    # 将 x1 也就是 x2 原来的值保存在 2
     SAVE    x1, 2
     # 保存 x3 至 x31
     .set    n, 3
