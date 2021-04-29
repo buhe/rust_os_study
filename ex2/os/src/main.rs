@@ -44,7 +44,18 @@ extern crate alloc;
 pub extern "C" fn rust_main() {
     interrupt::init();
     memory::init();
-    println!("{}", *memory::config::KERNEL_END_ADDRESS);
+    // 物理页分配
+    for _ in 0..2 {
+        let frame_0 = match memory::frame::FRAME_ALLOCATOR.lock().alloc() {
+            Result::Ok(frame_tracker) => frame_tracker,
+            Result::Err(err) => panic!("{}", err)
+        };
+        let frame_1 = match memory::frame::FRAME_ALLOCATOR.lock().alloc() {
+            Result::Ok(frame_tracker) => frame_tracker,
+            Result::Err(err) => panic!("{}", err)
+        };
+        println!("{} and {}", frame_0.address(), frame_1.address());
+    }
 
     panic!()
     // panic!("end of rust_main")
