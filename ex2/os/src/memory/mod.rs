@@ -8,6 +8,7 @@
 
 pub mod config;
 pub mod heap;
+pub mod address;
 
 pub use {config::*};
 
