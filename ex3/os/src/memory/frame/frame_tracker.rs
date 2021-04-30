@@ -1,6 +1,6 @@
 //! 提供物理页的「`Box`」 [`FrameTracker`]
 
-use crate::memory::{address::*, FRAME_ALLOCATOR};
+use crate::memory::{address::*, FRAME_ALLOCATOR, PAGE_SIZE};
 /// 分配出的物理页
 ///
 /// # `Tracker` 是什么？
@@ -35,5 +35,19 @@ impl FrameTracker {
 impl Drop for FrameTracker {
     fn drop(&mut self) {
         FRAME_ALLOCATOR.lock().dealloc(self);
+    }
+}
+
+impl core::ops::Deref for FrameTracker {
+    type Target = [u8; PAGE_SIZE];
+    fn deref(&self) -> &Self::Target {
+        self.page_number().deref_kernel()
+    }
+}
+
+/// `FrameTracker` 可以 deref 得到对应的 `[u8; PAGE_SIZE]`
+impl core::ops::DerefMut for FrameTracker {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.page_number().deref_kernel()
     }
 }
