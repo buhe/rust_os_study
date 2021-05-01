@@ -35,6 +35,12 @@ impl PageTableEntry {
                 .set_bits(PAGE_NUMBER_RANGE, page_number.unwrap_or_default().into()),
         )
     }
+
+      /// 清除
+    pub fn clear(&mut self) {
+        self.0 = 0;
+    }
+    
     /// 设置物理页号，同时根据 ppn 是否为 Some 来设置 Valid 位
     pub fn update_page_number(&mut self, ppn: Option<PhysicalPageNumber>) {
         if let Some(ppn) = ppn {
