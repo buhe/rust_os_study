@@ -10,7 +10,7 @@ mod thread;
 
 use crate::interrupt::*;
 use crate::memory::*;
-use alloc::{sync::Arc, vec, vec::Vec};
+use alloc::{sync::Arc};
 use spin::Mutex;
 
 pub use config::*;
