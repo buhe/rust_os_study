@@ -2,7 +2,8 @@ use super::context::Context;
 use super::timer;
 use crate::process::PROCESSOR;
 use riscv::register::{
-    scause::{Exception, Interrupt, Scause, Trap},stvec,
+    scause::{Exception, Interrupt, Scause, Trap},
+    stvec,
 };
 
 global_asm!(include_str!("./interrupt.asm"));
@@ -22,12 +23,22 @@ pub fn init() {
 }
 
 /// 中断的处理入口
-/// 
+///
 /// `interrupt.asm` 首先保存寄存器至 Context，其作为参数和 scause 以及 stval 一并传入此函数
 /// 具体的中断类型需要根据 scause 来推断，然后分别处理
 #[no_mangle]
-pub fn handle_interrupt(context: &mut Context, scause: Scause, stval: usize)  -> *mut Context{
+pub fn handle_interrupt(context: &mut Context, scause: Scause, stval: usize) -> *mut Context {
     // panic!("Interrupted: {:?}", scause.cause());
+    // 首先检查线程是否已经结束（内核线程会自己设置标记来结束自己）
+    {
+        let mut processor = PROCESSOR.lock();
+        let current_thread = processor.current_thread();
+        if current_thread.as_ref().inner().dead {
+            println!("thread {} exit", current_thread.id);
+            processor.kill_current_thread();
+            return processor.prepare_next_thread();
+        }
+    }
     match scause.cause() {
         // 断点中断（ebreak）
         Trap::Exception(Exception::Breakpoint) => breakpoint(context),
@@ -40,7 +51,7 @@ pub fn handle_interrupt(context: &mut Context, scause: Scause, stval: usize)  ->
 }
 
 /// 处理 ebreak 断点
-/// 
+///
 /// 继续执行，其中 `sepc` 增加 2 字节，以跳过当前这条 `ebreak` 指令
 // /// 处理 ebreak 断点
 fn breakpoint(context: &mut Context) -> *mut Context {
