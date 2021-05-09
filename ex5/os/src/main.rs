@@ -35,6 +35,7 @@ mod sbi;
 
 use process::*;
 use alloc::sync::Arc;
+use memory::PhysicalAddress;
 
 // 汇编编写的程序入口，具体见该文件
 global_asm!(include_str!("entry.asm"));
@@ -64,42 +65,35 @@ pub fn create_kernel_thread(
 ///
 /// 在 `_start` 为我们进行了一系列准备之后，这是第一个被调用的 Rust 函数
 #[no_mangle]
-pub extern "C" fn rust_main() -> ! {
+pub extern "C" fn rust_main(_hart_id: usize, dtb_pa: PhysicalAddress) -> ! {
     interrupt::init();
     memory::init();
-    // let remap = memory::mapping::MemorySet::new_kernel().unwrap();
-    // remap.activate();
+    drivers::init(dtb_pa);
+    fs::init();
 
-    {
-        let mut processor = PROCESSOR.lock();
-        // 创建一个内核进程
-        let kernel_process = Process::new_kernel().unwrap();
-        // 为这个进程创建多个线程，并设置入口均为 sample_process，而参数不同
-        for i in 1..9usize {
-            println!("o = {}", i);
-            processor.add_thread(create_kernel_thread(
-                kernel_process.clone(),
-                sample_process as usize,
-                Some(&[i]),
-            ));
-        }
-    }
+    let process = Process::new_kernel().unwrap();
 
+    PROCESSOR
+        .lock()
+        .add_thread(Thread::new(process.clone(), simple as usize, Some(&[0])).unwrap());
 
-    // println!("kernel remapped");
-    extern "C" {
-        fn __restore(context: usize);
-    }
-    // 获取第一个线程的 Context
-    let context = PROCESSOR.lock().prepare_next_thread();
-    // 启动第一个线程
-    unsafe { __restore(context as usize) };
-    unreachable!()
+    // 把多余的 process 引用丢弃掉
+    drop(process);
 
-    // panic!()
-    // panic!("end of rust_main")
+    PROCESSOR.lock().run()
 }
+/// 测试任何内核线程都可以操作文件系统和驱动
+fn simple(id: usize) {
+    println!("hello from thread id {}", id);
+    // 新建一个目录
+    fs::ROOT_INODE
+        .create("tmp", rcore_fs::vfs::FileType::Dir, 0o666)
+        .expect("failed to mkdir /tmp");
+    // 输出根文件目录内容
+    fs::ls("/");
 
+    loop {}
+}
 
 fn sample_process(id: usize) {
     println!("hello from kernel thread {}", id);
