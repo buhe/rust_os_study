@@ -35,13 +35,13 @@ pub fn rust_main() -> ! {
     }
     clear_bss();
     println!("Hello, world!");
-    println!(".text [{:#x}, {:#x})", stext as usize, etext as usize);
-    println!(".rodata [{:#x}, {:#x})", srodata as usize, erodata as usize);
-    println!(".data [{:#x}, {:#x})", sdata as usize, edata as usize);
-    println!(
+    info!(".text [{:#x}, {:#x})", stext as usize, etext as usize);
+    error!(".rodata [{:#x}, {:#x})", srodata as usize, erodata as usize);
+    debug!(".data [{:#x}, {:#x})", sdata as usize, edata as usize);
+    trace!(
         "boot_stack [{:#x}, {:#x})",
         boot_stack as usize, boot_stack_top as usize
     );
-    println!(".bss [{:#x}, {:#x})", sbss as usize, ebss as usize);
+    warn!(".bss [{:#x}, {:#x})", sbss as usize, ebss as usize);
     panic!("Shutdown machine!");
 }
