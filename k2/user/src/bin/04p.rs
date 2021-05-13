@@ -6,7 +6,8 @@
 extern crate user_lib;
 
 #[no_mangle]
-fn main() -> i32 {
-    println!("Hello 04");
+unsafe fn main() -> i32 {
+    let s = (0x8002b032 as *mut u8).read_volatile();
+    println!("s = {}", s);
     0
 }
