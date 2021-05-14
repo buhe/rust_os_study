@@ -1,22 +1,19 @@
 mod context;
 
+use crate::batch::{run_next_app, get_current_app_mem_range};
+use crate::syscall::syscall;
 use riscv::register::{
     mtvec::TrapMode,
-    stvec,
-    scause::{
-        self,
-        Trap,
-        Exception,
-    },
-    stval,
+    scause::{self, Exception, Trap},
+    stval, stvec,
 };
-use crate::syscall::syscall;
-use crate::batch::run_next_app;
 
 global_asm!(include_str!("trap.S"));
 
 pub fn init() {
-    extern "C" { fn __alltraps(); }
+    extern "C" {
+        fn __alltraps();
+    }
     unsafe {
         stvec::write(__alltraps as usize, TrapMode::Direct);
     }
@@ -28,11 +25,12 @@ pub fn trap_handler(cx: &mut TrapContext) -> &mut TrapContext {
     let stval = stval::read();
     match scause.cause() {
         Trap::Exception(Exception::UserEnvCall) => {
+            let range = get_current_app_mem_range();
+            debug!("current app range is = {:x} : {:x}", range.0, range.1);
             cx.sepc += 4;
             cx.x[10] = syscall(cx.x[17], [cx.x[10], cx.x[11], cx.x[12]]) as usize;
         }
-        Trap::Exception(Exception::StoreFault) |
-        Trap::Exception(Exception::StorePageFault) => {
+        Trap::Exception(Exception::StoreFault) | Trap::Exception(Exception::StorePageFault) => {
             error!("[kernel] PageFault in application, core dumped.");
             run_next_app();
         }
@@ -41,7 +39,11 @@ pub fn trap_handler(cx: &mut TrapContext) -> &mut TrapContext {
             run_next_app();
         }
         _ => {
-            panic!("Unsupported trap {:?}, stval = {:#x}!", scause.cause(), stval);
+            panic!(
+                "Unsupported trap {:?}, stval = {:#x}!",
+                scause.cause(),
+                stval
+            );
         }
     }
     cx

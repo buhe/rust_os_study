@@ -1,4 +1,4 @@
-use core::cell::RefCell;
+use core::{cell::RefCell, usize};
 use lazy_static::*;
 use crate::trap::TrapContext;
 
@@ -79,7 +79,10 @@ impl AppManagerInner {
     }
 
     pub fn get_current_app(&self) -> usize { self.current_app }
-
+    // curreny_app 会比 app_id 大 1
+    pub fn get_current_app_mem_range(&self) -> (usize, usize) {
+        (self.app_start[self.current_app - 1], self.app_start[self.current_app])
+    }
     pub fn move_to_next_app(&mut self) {
         self.current_app += 1;
     }
@@ -111,6 +114,11 @@ pub fn init() {
 
 pub fn print_app_info() {
     APP_MANAGER.inner.borrow().print_app_info();
+}
+
+
+pub fn get_current_app_mem_range() -> (usize, usize) {
+    APP_MANAGER.inner.borrow().get_current_app_mem_range()
 }
 
 pub fn run_next_app() -> ! {
