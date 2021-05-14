@@ -3,14 +3,19 @@
 #![feature(global_asm)]
 #![feature(llvm_asm)]
 #![feature(panic_info_message)]
+// TODO
+#![feature(const_in_array_repeat_expressions)]
 
 #[macro_use]
 mod console;
+mod config;
 mod lang_items;
+mod loader;
 mod sbi;
 mod syscall;
+mod task;
+mod timer;
 mod trap;
-mod batch;
 
 global_asm!(include_str!("entry.asm"));
 global_asm!(include_str!("link_app.S"));
@@ -20,9 +25,7 @@ fn clear_bss() {
         fn sbss();
         fn ebss();
     }
-    (sbss as usize..ebss as usize).for_each(|a| {
-        unsafe { (a as *mut u8).write_volatile(0) }
-    });
+    (sbss as usize..ebss as usize).for_each(|a| unsafe { (a as *mut u8).write_volatile(0) });
 }
 
 #[no_mangle]
@@ -40,18 +43,22 @@ pub fn rust_main() -> ! {
         fn boot_stack_top();
     }
     clear_bss();
-    
+
     println!("Hello, world!");
     info!(".text [{:#x}, {:#x})", stext as usize, etext as usize);
     error!(".rodata [{:#x}, {:#x})", srodata as usize, erodata as usize);
     debug!(".data [{:#x}, {:#x})", sdata as usize, edata as usize);
     trace!(
         "boot_stack [{:#x}, {:#x})",
-        boot_stack as usize, boot_stack_top as usize
+        boot_stack as usize,
+        boot_stack_top as usize
     );
     warn!(".bss [{:#x}, {:#x})", sbss as usize, ebss as usize);
 
     trap::init();
-    batch::init();
-    batch::run_next_app();
+    loader::load_apps();
+    trap::enable_timer_interrupt();
+    timer::set_next_trigger();
+    task::run_first_task();
+    panic!("Unreachable in rust_main!");
 }

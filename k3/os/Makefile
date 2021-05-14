@@ -44,7 +44,7 @@ kernel:
 	@cd ../user && make build
 	@echo Platform: $(BOARD)
 	@cp src/linker-$(BOARD).ld src/linker.ld
-	@cargo build --features ${LOG} --release
+	@cargo build --features "${LOG} board_$(BOARD)" --release
 	@rm src/linker.ld
 
 clean:
