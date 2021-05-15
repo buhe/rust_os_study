@@ -1,13 +1,15 @@
 mod context;
 mod switch;
 mod task;
-
+mod scheduler;
 use crate::config::MAX_APP_NUM;
 use crate::loader::{get_num_app, init_app_cx};
 use core::cell::RefCell;
 use lazy_static::*;
 use switch::__switch;
 use task::{TaskControlBlock, TaskStatus};
+use scheduler::rr::RR;
+use scheduler::Scheduler;
 
 pub use context::TaskContext;
 
@@ -70,13 +72,8 @@ impl TaskManager {
     }
 
     fn find_next_task(&self) -> Option<usize> {
-        let inner = self.inner.borrow();
-        let current = inner.current_task;
-        (current + 1..current + self.num_app + 1)
-            .map(|id| id % self.num_app)
-            .find(|id| {
-                inner.tasks[*id].task_status == TaskStatus::Ready
-            })
+        let s = RR::new();
+        s.find_next_task()
     }
 
     fn run_next_task(&self) {
