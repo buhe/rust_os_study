@@ -2,13 +2,13 @@ mod context;
 mod switch;
 mod task;
 mod scheduler;
-use crate::config::MAX_APP_NUM;
+use crate::config::{MAX_APP_NUM, INIT_PRIORITY, BIG_STRIDE};
 use crate::loader::{get_num_app, init_app_cx};
 use core::cell::RefCell;
 use lazy_static::*;
 use switch::__switch;
 use task::{TaskControlBlock, TaskStatus};
-use scheduler::rr::RR;
+use scheduler::stride::Stride;
 use scheduler::Scheduler;
 
 pub use context::TaskContext;
@@ -16,6 +16,7 @@ pub use context::TaskContext;
 pub struct TaskManager {
     num_app: usize,
     inner: RefCell<TaskManagerInner>,
+    s: Stride,
 }
 
 struct TaskManagerInner {
@@ -29,7 +30,7 @@ lazy_static! {
     pub static ref TASK_MANAGER: TaskManager = {
         let num_app = get_num_app();
         let mut tasks = [
-            TaskControlBlock { task_cx_ptr: 0, task_status: TaskStatus::UnInit };
+            TaskControlBlock { task_cx_ptr: 0, task_status: TaskStatus::UnInit, task_sride: 0, task_priority: INIT_PRIORITY };
             MAX_APP_NUM
         ];
         for i in 0..num_app {
@@ -42,6 +43,7 @@ lazy_static! {
                 tasks,
                 current_task: 0,
             }),
+            s: Stride::new(tasks),
         }
     };
 }
@@ -72,15 +74,17 @@ impl TaskManager {
     }
 
     fn find_next_task(&self) -> Option<usize> {
-        let s = RR::new();
-        s.find_next_task()
+        self.s.find_next_task()
     }
 
     fn run_next_task(&self) {
         if let Some(next) = self.find_next_task() {
             let mut inner = self.inner.borrow_mut();
             let current = inner.current_task;
-            inner.tasks[next].task_status = TaskStatus::Running;
+            let mut next_task = inner.tasks[next];
+            next_task.task_status = TaskStatus::Running;
+            let pass = BIG_STRIDE / next_task.task_priority;
+            next_task.task_sride += pass;
             inner.current_task = next;
             let current_task_cx_ptr2 = inner.tasks[current].get_task_cx_ptr2();
             let next_task_cx_ptr2 = inner.tasks[next].get_task_cx_ptr2();

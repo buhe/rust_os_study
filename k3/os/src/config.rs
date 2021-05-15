@@ -9,3 +9,6 @@ pub const CLOCK_FREQ: usize = 403000000 / 62;
 
 #[cfg(feature = "board_qemu")]
 pub const CLOCK_FREQ: usize = 12500000;
+
+pub const INIT_PRIORITY: u8 = 16;
+pub const BIG_STRIDE: u8 = 255;
