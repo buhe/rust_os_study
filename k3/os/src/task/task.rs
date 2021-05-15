@@ -1,5 +1,5 @@
 use core::cmp::Ordering;
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub struct TaskControlBlock {
     pub task_cx_ptr: usize,
     pub task_status: TaskStatus,
@@ -31,7 +31,7 @@ impl PartialOrd for TaskControlBlock {
     }
 }
 
-#[derive(Copy, Clone,Eq, PartialEq)]
+#[derive(Copy, Clone,Eq, PartialEq, Debug)]
 pub enum TaskStatus {
     UnInit,
     Ready,
