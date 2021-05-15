@@ -7,7 +7,7 @@ use heapless::binary_heap::{BinaryHeap, Max};
 
 // 关于pass的值，等于BIG_STRIDE/优先级
 pub struct Stride {
-    heap: BinaryHeap<TaskControlBlock, Max, 8>,
+    heap: BinaryHeap<TaskControlBlock, Max, 56>,
 }
 
 impl Scheduler for Stride {
