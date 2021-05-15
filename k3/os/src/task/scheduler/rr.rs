@@ -16,4 +16,5 @@ impl Scheduler for RR {
                 inner.tasks[*id].task_status == TaskStatus::Ready
             })
     }
+    fn push(&mut self, _: TaskControlBlock) -> u8{0}
 }

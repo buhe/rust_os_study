@@ -16,12 +16,12 @@ pub use context::TaskContext;
 pub struct TaskManager {
     num_app: usize,
     inner: RefCell<TaskManagerInner>,
-    s: Stride,
 }
 
 struct TaskManagerInner {
     tasks: [TaskControlBlock; MAX_APP_NUM],
     current_task: usize,
+     s: Stride,
 }
 
 unsafe impl Sync for TaskManager {}
@@ -34,6 +34,7 @@ lazy_static! {
             MAX_APP_NUM
         ];
         for i in 0..num_app {
+            tasks[i].task_priority = i as u8+ 2;
             tasks[i].task_cx_ptr = init_app_cx(i) as * const _ as usize;
             tasks[i].task_status = TaskStatus::Ready;
         }
@@ -42,8 +43,8 @@ lazy_static! {
             inner: RefCell::new(TaskManagerInner {
                 tasks,
                 current_task: 0,
+                s: Stride::new(tasks),
             }),
-            s: Stride::new(tasks),
         }
     };
 }
@@ -74,7 +75,8 @@ impl TaskManager {
     }
 
     fn find_next_task(&self) -> Option<usize> {
-        self.s.find_next_task()
+        let inner = self.inner.borrow();
+        inner.s.find_next_task()
     }
 
     fn run_next_task(&self) {
@@ -82,6 +84,7 @@ impl TaskManager {
             let mut inner = self.inner.borrow_mut();
             let current = inner.current_task;
             let mut next_task = inner.tasks[next];
+            inner.s.push(next_task);
             next_task.task_status = TaskStatus::Running;
             let pass = BIG_STRIDE / next_task.task_priority;
             next_task.task_sride += pass;

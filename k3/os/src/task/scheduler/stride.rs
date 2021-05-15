@@ -23,8 +23,22 @@ impl Scheduler for Stride {
     fn find_next_task(&self) -> Option<usize> {
         let inner = TASK_MANAGER.inner.borrow();
         let current = inner.current_task;
-        (current + 1..current + TASK_MANAGER.num_app + 1)
-            .map(|id| id % TASK_MANAGER.num_app)
-            .find(|id| inner.tasks[*id].task_status == TaskStatus::Ready)
+        // (current + 1..current + TASK_MANAGER.num_app + 1)
+        //     .map(|id| id % TASK_MANAGER.num_app)
+        //     .find(|id| inner.tasks[*id].task_status == TaskStatus::Ready)
+        let next = self.heap.peek().unwrap();
+        if next.task_status == TaskStatus::Ready {
+            (0..current + TASK_MANAGER.num_app + 1)
+                .map(|id| id % TASK_MANAGER.num_app)
+                .find(|id| inner.tasks[*id] == *next)
+        } else {
+            self.find_next_task()
+        }
+        // .and(|id|  inner.tasks[*id].task_status == TaskStatus::Ready)
+    }
+
+    fn push(&mut self, task: TaskControlBlock) -> u8 {
+        self.heap.push(task).unwrap();
+        0
     }
 }
