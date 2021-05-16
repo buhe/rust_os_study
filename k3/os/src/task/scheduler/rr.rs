@@ -6,7 +6,7 @@ pub struct RR;
 use crate::{config::{MAX_APP_NUM}, task::task::TaskControlBlock};
 
 impl Scheduler for RR {
-    fn new(_: [TaskControlBlock; MAX_APP_NUM]) -> Self{Self{}}
+    fn new(_: &[&TaskControlBlock; MAX_APP_NUM]) -> Self{Self{}}
     fn find_next_task(&self) -> Option<usize> {
         let inner = TASK_MANAGER.inner.borrow();
         let current = inner.current_task;
@@ -16,5 +16,4 @@ impl Scheduler for RR {
                 inner.tasks[*id].task_status == TaskStatus::Ready
             })
     }
-    fn push(&mut self, _: TaskControlBlock) -> u8{0}
 }

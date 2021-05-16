@@ -1,10 +1,11 @@
 use core::cmp::Ordering;
-#[derive(Copy, Clone, Eq, PartialEq, Debug)]
+#[derive(Eq, PartialEq, Debug)]
 pub struct TaskControlBlock {
     pub task_cx_ptr: usize,
     pub task_status: TaskStatus,
     pub task_sride: u8,
     pub task_priority: u8,
+    pub task_mo: u8,
 }
 
 impl TaskControlBlock {
@@ -31,7 +32,7 @@ impl PartialOrd for TaskControlBlock {
     }
 }
 
-#[derive(Copy, Clone,Eq, PartialEq, Debug)]
+#[derive(Eq, PartialEq, Debug)]
 pub enum TaskStatus {
     UnInit,
     Ready,
