@@ -9,3 +9,5 @@ pub const CLOCK_FREQ: usize = 403000000 / 62;
 
 #[cfg(feature = "board_qemu")]
 pub const CLOCK_FREQ: usize = 12500000;
+
+pub const KERNEL_HEAP_SIZE: usize = 0x30_0000;
