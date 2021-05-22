@@ -28,6 +28,7 @@ impl TaskControlBlock {
             .translate(VirtAddr::from(TRAP_CONTEXT).into())
             .unwrap()
             .ppn();
+        debug!("trap_cx_ppn = {:?}, TRAP_CONTEXT = {:#x}", trap_cx_ppn, TRAP_CONTEXT);
         let task_status = TaskStatus::Ready;
         // map a kernel-stack in kernel space
         let (kernel_stack_bottom, kernel_stack_top) = kernel_stack_position(app_id);
