@@ -8,6 +8,9 @@
 
 #![feature(alloc_error_handler)]
 
+#[macro_use]
+extern crate bitflags;
+
 extern crate alloc;
 #[macro_use]
 mod console;
@@ -58,10 +61,12 @@ pub fn rust_main() -> ! {
         boot_stack_top as usize
     );
     warn!(".bss [{:#x}, {:#x})", sbss as usize, ebss as usize);
-    mm::init();
-    trap::init();
+     mm::init();
+    println!("[kernel] back to world!");
     mm::heap_test();
-    loader::load_apps();
+    mm::remap_test();
+    trap::init();
+    //trap::enable_interrupt();   
     trap::enable_timer_interrupt();
     timer::set_next_trigger();
     task::run_first_task();

@@ -19,9 +19,9 @@ fn main() -> i32 {
         index = (index + 1) % SIZE;
         pow[index] = last * P % MOD;
         if i % 10000 == 0 {
-            println!("{}^{}={}", P, i, pow[index]);
+            println!("[2]{}^{}={}", P, i, pow[index]);
         }
     }
-    println!("Test power OK!");
+    println!("[2]Test power OK!");
     0
 }
