@@ -19,6 +19,6 @@ jobs:
     - name: Build k5
       working-directory: ./k5/os
       run: make build
-    - name: Build k3
-      working-directory: ./k3/os
-      run: make build
+    # - name: Build k3
+    #   working-directory: ./k3/os
+    #   run: make build
