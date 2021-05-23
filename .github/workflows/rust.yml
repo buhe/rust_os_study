@@ -16,7 +16,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: k5
-      run: cd k5
-    - name: Build
-      run: cargo build --verbose
+    - name: Build k5
+      working-directory: ./k5
+      run: make build
