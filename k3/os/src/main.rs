@@ -5,7 +5,8 @@
 #![feature(panic_info_message)]
 // TODO
 #![feature(const_in_array_repeat_expressions)]
-
+#![feature(alloc_error_handler)]
+extern crate alloc;
 #[macro_use]
 mod console;
 mod config;
@@ -16,6 +17,7 @@ mod syscall;
 mod task;
 mod timer;
 mod trap;
+mod mm;
 
 global_asm!(include_str!("entry.asm"));
 global_asm!(include_str!("link_app.S"));
@@ -54,7 +56,7 @@ pub fn rust_main() -> ! {
         boot_stack_top as usize
     );
     warn!(".bss [{:#x}, {:#x})", sbss as usize, ebss as usize);
-
+    mm::init();
     trap::init();
     loader::load_apps();
     trap::enable_timer_interrupt();

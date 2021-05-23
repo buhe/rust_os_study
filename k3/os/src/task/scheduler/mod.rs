@@ -1,10 +1,12 @@
 
 pub mod rr;
 pub mod stride;
-use crate::config::{MAX_APP_NUM};
+use alloc::sync::Arc;
 
+use crate::config::{MAX_APP_NUM};
+use alloc::vec::Vec;
 use super::task::TaskControlBlock;
 pub trait Scheduler {
     fn find_next_task(&self) -> Option<usize> ;
-    fn new(tasks: &[&TaskControlBlock; MAX_APP_NUM]) -> Self;
+    fn new(tasks: Vec<Arc<TaskControlBlock>>) -> Self;
 }

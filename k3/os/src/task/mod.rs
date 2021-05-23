@@ -5,11 +5,13 @@ mod scheduler;
 use crate::config::{MAX_APP_NUM, INIT_PRIORITY, BIG_STRIDE};
 use crate::loader::{get_num_app, init_app_cx};
 use core::{cell::RefCell};
+use alloc::sync::Arc;
 use lazy_static::*;
 use switch::__switch;
 use task::{TaskControlBlock, TaskStatus};
 use scheduler::stride::Stride;
 use scheduler::Scheduler;
+use alloc::vec::Vec;
 
 pub use context::TaskContext;
 
@@ -19,7 +21,7 @@ pub struct TaskManager {
 }
 
 struct TaskManagerInner {
-    tasks: [TaskControlBlock; MAX_APP_NUM],
+    tasks: [Arc<TaskControlBlock>; MAX_APP_NUM],
     current_task: usize,
      s: Stride,
 }
@@ -30,16 +32,16 @@ lazy_static! {
     pub static ref TASK_MANAGER: TaskManager = {
         let num_app = get_num_app();
         let mut tasks = [
-            TaskControlBlock {task_mo:0, task_cx_ptr: 0, task_status: TaskStatus::UnInit, task_sride: 0, task_priority: INIT_PRIORITY };
+            Arc::new(TaskControlBlock {task_mo:0, task_cx_ptr: 0, task_status: TaskStatus::UnInit, task_sride: 0, task_priority: INIT_PRIORITY });
             MAX_APP_NUM
         ];
-        let mut task2:&[&TaskControlBlock;MAX_APP_NUM];
+        let mut task2:Vec<Arc<TaskControlBlock>> = Vec::new();
         for i in 0..num_app {
             tasks[i].task_priority = i as u8+ 2;
             tasks[i].task_cx_ptr = init_app_cx(i) as * const _ as usize;
             tasks[i].task_status = TaskStatus::Ready;
             tasks[i].task_mo = i as u8;
-            task2[i] = &tasks[i];
+            task2.push(Arc::clone(&tasks[i]));
         }
         TaskManager {
             num_app,

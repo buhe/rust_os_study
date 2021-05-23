@@ -3,20 +3,21 @@ use super::super::TaskStatus;
 use super::Scheduler;
 use crate::{config::MAX_APP_NUM, task::task::TaskControlBlock};
 
+use alloc::sync::Arc;
 use heapless::binary_heap::{BinaryHeap, Max};
-
+use alloc::vec::Vec;
 // 关于pass的值，等于BIG_STRIDE/优先级
 pub struct Stride {
-    heap: BinaryHeap<&TaskControlBlock, Max, 64>,
+    heap: BinaryHeap<Arc<TaskControlBlock>, Max, 64>,
 }
 
 impl Scheduler for Stride {
-    fn new(tasks: &[&TaskControlBlock; MAX_APP_NUM]) -> Self {
+    fn new(tasks: Vec<Arc<TaskControlBlock>>) -> Self {
         let mut scheduler = Self {
             heap: BinaryHeap::new(),
         };
-        for t in (*tasks).iter() {
-            scheduler.heap.push(*t).unwrap();
+        for t in tasks.iter() {
+            scheduler.heap.push(Arc::clone(t)).unwrap();
         }
         scheduler
     }

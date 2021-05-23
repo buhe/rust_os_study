@@ -1,12 +1,14 @@
+use alloc::sync::Arc;
+
 use super::Scheduler;
 use super::super::TASK_MANAGER;
 use super::super::TaskStatus;
 
 pub struct RR;
 use crate::{config::{MAX_APP_NUM}, task::task::TaskControlBlock};
-
+use alloc::vec::Vec;
 impl Scheduler for RR {
-    fn new(_: &[&TaskControlBlock; MAX_APP_NUM]) -> Self{Self{}}
+    fn new(_: Vec<Arc<TaskControlBlock>>) -> Self{Self{}}
     fn find_next_task(&self) -> Option<usize> {
         let inner = TASK_MANAGER.inner.borrow();
         let current = inner.current_task;
