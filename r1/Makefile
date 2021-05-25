@@ -80,7 +80,7 @@ env:
 doc:
 	$(call colorecho, "\nGenerating docs")
 	@$(DOC_CMD) --document-private-items --open
-
+build: env $(KERNEL_BIN)
 ifeq ($(QEMU_MACHINE_TYPE),)
 qemu:
 	$(call colorecho, "\n$(QEMU_MISSING_STRING)")
