@@ -61,15 +61,15 @@ pub fn rust_main() -> ! {
         boot_stack_top as usize
     );
     warn!(".bss [{:#x}, {:#x})", sbss as usize, ebss as usize);
-     mm::init();
-    println!("[kernel] back to world!");
-    mm::heap_test();
+    debug!("[kernel] Hello, world!");
+    mm::init();
     mm::remap_test();
+    task::add_initproc();
+    debug!("after initproc!");
     trap::init();
-    //trap::enable_interrupt();   
     trap::enable_timer_interrupt();
     timer::set_next_trigger();
-    task::run_first_task();
-
+    loader::list_apps();
+    task::run_tasks();
     panic!("Unreachable in rust_main!");
 }

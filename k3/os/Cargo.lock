@@ -142,6 +142,7 @@ dependencies = [
  "heapless",
  "lazy_static",
  "riscv",
+ "spin 0.7.1",
 ]
 
 [[package]]
