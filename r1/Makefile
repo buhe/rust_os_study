@@ -64,7 +64,7 @@ DOCKER_TOOLS = $(DOCKER_CMD) $(DOCKER_IMAGE)
 
 EXEC_QEMU = $(QEMU_BINARY) -M $(QEMU_MACHINE_TYPE)
 
-.PHONY: all $(KERNEL_ELF) $(KERNEL_BIN) doc qemu clippy clean readelf objdump nm check
+.PHONY: all $(KERNEL_ELF) $(KERNEL_BIN) doc qemu clippy env clean readelf objdump nm check
 
 all: $(KERNEL_BIN)
 
@@ -74,7 +74,9 @@ $(KERNEL_ELF):
 
 $(KERNEL_BIN): $(KERNEL_ELF)
 	@$(OBJCOPY_CMD) $(KERNEL_ELF) $(KERNEL_BIN)
-
+env:
+	cargo install rustfilt
+	(rustup target list | grep "aarch64-unknown-none-softfloat (installed)") || rustup target add aarch64-unknown-none-softfloat
 doc:
 	$(call colorecho, "\nGenerating docs")
 	@$(DOC_CMD) --document-private-items --open
@@ -83,7 +85,7 @@ ifeq ($(QEMU_MACHINE_TYPE),)
 qemu:
 	$(call colorecho, "\n$(QEMU_MISSING_STRING)")
 else
-qemu: $(KERNEL_BIN)
+qemu: env $(KERNEL_BIN)
 	$(call colorecho, "\nLaunching QEMU")
 	@$(DOCKER_QEMU) $(EXEC_QEMU) $(QEMU_RELEASE_ARGS) -kernel $(KERNEL_BIN)
 endif
