@@ -3,27 +3,27 @@
 
 #[macro_use]
 extern crate user_lib;
-use user_lib::{fork, yield_, waitpid, exit, wait};
+use user_lib::{spawn, getpid, wait};
 
-const MAGIC: i32 = -0x10384;
 
 #[no_mangle]
 pub fn main() -> i32 {
-    println!("I am the parent. Forking the child...");
-    let pid = fork();
+     assert_eq!(wait(&mut 0i32), -1);
+    println!("sys_wait without child process test passed!");
+    println!("parent start, pid = {}!", getpid());
+    let pid = spawn("usertests\0");
     if pid == 0 {
-        println!("I am the child.");
-        for _ in 0..7 { yield_(); }
-        exit(MAGIC);
+        // child process
+        println!("hello child process!");
+        100
     } else {
-        println!("I am parent, fork a child pid {}", pid);
+        // parent process
+        let mut exit_code: i32 = 0;
+        println!("ready waiting on parent process!");
+        assert_eq!(pid, wait(&mut exit_code));
+        assert_eq!(exit_code, 100);
+        println!("child process pid = {}, exit code = {}", pid, exit_code);
+        0
     }
-    println!("I am the parent, waiting now..");
-    let mut xstate: i32 = 0;
-    assert!(waitpid(pid as usize, &mut xstate) == pid && xstate == MAGIC);
-    assert!(waitpid(pid as usize, &mut xstate) < 0 && wait(&mut xstate) <= 0);
-    println!("waitpid {} ok.", pid);
-    println!("exit pass.");
-    0
 }
 

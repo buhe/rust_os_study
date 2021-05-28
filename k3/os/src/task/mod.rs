@@ -4,7 +4,9 @@ mod task;
 mod scheduler;
 use crate::config::{MAX_APP_NUM, INIT_PRIORITY, BIG_STRIDE};
 use crate::loader::{get_num_app, init_app_cx};
+use core::borrow::Borrow;
 use core::{cell::RefCell};
+use alloc::rc::Rc;
 use spin::Mutex;
 use lazy_static::*;
 use switch::__switch;
@@ -21,7 +23,7 @@ pub struct TaskManager {
 }
 
 struct TaskManagerInner {
-    tasks: [Mutex<TaskControlBlock>; MAX_APP_NUM],
+    tasks: Vec<Rc<RefCell<TaskControlBlock>>>,
     current_task: usize,
      s: Stride,
 }
@@ -31,15 +33,13 @@ unsafe impl Sync for TaskManager {}
 lazy_static! {
     pub static ref TASK_MANAGER: TaskManager = {
         let num_app = get_num_app();
-        let mut tasks = [
-            Mutex::new(TaskControlBlock {task_mo:0, task_cx_ptr: 0, task_status: TaskStatus::UnInit, task_sride: 0, task_priority: INIT_PRIORITY });
-            MAX_APP_NUM
-        ];
+        let mut tasks = Vec::new();
+        tasks.push(Rc::new(RefCell::new(TaskControlBlock {task_mo:0, task_cx_ptr: 0, task_status: TaskStatus::UnInit, task_sride: 0, task_priority: INIT_PRIORITY })));
         for i in 0..num_app {
-            tasks[i].lock().task_priority = i as u8+ 2;
-            tasks[i].lock().task_cx_ptr = init_app_cx(i) as * const _ as usize;
-            tasks[i].lock().task_status = TaskStatus::Ready;
-            tasks[i].lock().task_mo = i as u8;
+            tasks[i].borrow_mut().task_priority = i as u8+ 2;
+            tasks[i].borrow_mut().task_cx_ptr = init_app_cx(i) as * const _ as usize;
+            tasks[i].borrow_mut().task_status = TaskStatus::Ready;
+            tasks[i].borrow_mut().task_mo = i as u8;
         }
         TaskManager {
             num_app,
@@ -54,8 +54,8 @@ lazy_static! {
 
 impl TaskManager {
     fn run_first_task(&self) {
-        self.inner.borrow_mut().tasks[0].task_status = TaskStatus::Running;
-        let next_task_cx_ptr2 = self.inner.borrow().tasks[0].get_task_cx_ptr2();
+        self.inner.borrow_mut().tasks[0].borrow_mut().task_status = TaskStatus::Running;
+        let next_task_cx_ptr2 = self.inner.borrow().tasks[0].borrow_mut().get_task_cx_ptr2();
         let _unused: usize = 0;
         unsafe {
             __switch(
@@ -68,13 +68,13 @@ impl TaskManager {
     fn mark_current_suspended(&self) {
         let mut inner = self.inner.borrow_mut();
         let current = inner.current_task;
-        inner.tasks[current].task_status = TaskStatus::Ready;
+        inner.tasks[current].borrow_mut().task_status = TaskStatus::Ready;
     }
 
     fn mark_current_exited(&self) {
         let mut inner = self.inner.borrow_mut();
         let current = inner.current_task;
-        inner.tasks[current].task_status = TaskStatus::Exited;
+        inner.tasks[current].borrow_mut().task_status = TaskStatus::Exited;
     }
 
     fn find_next_task(&self) -> Option<usize> {
@@ -88,13 +88,13 @@ impl TaskManager {
             let current = inner.current_task;
             let mut next_task = inner.tasks[next];
             // inner.s.push(next_task);
-            next_task.task_status = TaskStatus::Running;
-            let pass = BIG_STRIDE / next_task.task_priority;
-            next_task.task_sride += pass;
-            debug!("task stride is {},{},{}", next_task.task_sride,current,next);
+            next_task.borrow_mut().task_status = TaskStatus::Running;
+            let pass = BIG_STRIDE / next_task.borrow_mut().task_priority;
+            next_task.borrow_mut().task_sride += pass;
+            // debug!("task stride is {},{},{}", next_task.borrow().task_sride,current,next);
             inner.current_task = next;
-            let current_task_cx_ptr2 = inner.tasks[current].get_task_cx_ptr2();
-            let next_task_cx_ptr2 = inner.tasks[next].get_task_cx_ptr2();
+            let current_task_cx_ptr2 = inner.tasks[current].borrow_mut().get_task_cx_ptr2();
+            let next_task_cx_ptr2 = inner.tasks[next].borrow_mut().get_task_cx_ptr2();
             core::mem::drop(inner);
             unsafe {
                 __switch(

@@ -7,6 +7,7 @@ const SYSCALL_GETPID: usize = 172;
 const SYSCALL_FORK: usize = 220;
 const SYSCALL_EXEC: usize = 221;
 const SYSCALL_WAITPID: usize = 260;
+const SASCALL_SPAWN: usize = 400;
 
 fn syscall(id: usize, args: [usize; 3]) -> isize {
     let mut ret: isize;
@@ -52,6 +53,10 @@ pub fn sys_fork() -> isize {
 
 pub fn sys_exec(path: &str) -> isize {
     syscall(SYSCALL_EXEC, [path.as_ptr() as usize, 0, 0])
+}
+
+pub fn sys_spawn(path: &str) -> isize {
+    syscall(SASCALL_SPAWN, [path.as_ptr() as usize, 0, 0])
 }
 
 pub fn sys_waitpid(pid: isize, exit_code: *mut i32) -> isize {

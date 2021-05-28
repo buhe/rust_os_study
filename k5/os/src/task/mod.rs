@@ -21,7 +21,7 @@ pub use processor::{
     take_current_task,
     schedule,
 };
-pub use manager::add_task;
+pub use manager::{add_task, get_task_by_pid};
 pub use pid::{PidHandle, pid_alloc, KernelStack};
 
 pub fn suspend_current_and_run_next() {

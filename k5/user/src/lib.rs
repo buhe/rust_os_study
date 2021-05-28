@@ -47,6 +47,7 @@ pub fn yield_() -> isize { sys_yield() }
 pub fn get_time() -> isize { sys_get_time() }
 pub fn getpid() -> isize { sys_getpid() }
 pub fn fork() -> isize { sys_fork() }
+pub fn spawn(path: &str) -> isize { sys_spawn(path) }
 pub fn exec(path: &str) -> isize { sys_exec(path) }
 pub fn wait(exit_code: &mut i32) -> isize {
     loop {
