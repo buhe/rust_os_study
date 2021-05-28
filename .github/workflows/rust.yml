@@ -16,8 +16,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build k5
-      working-directory: ./k5/os
+    # - name: Build k5
+    #   working-directory: ./k5/os
+    #   run: make build
+    - name: Build k6
+      working-directory: ./k6/os
       run: make build
     - name: Build r1
       working-directory: ./r1
