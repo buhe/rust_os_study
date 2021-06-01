@@ -10,8 +10,15 @@ use crate::mm::{
     translated_str,
     translated_refmut,
 };
-use crate::loader::get_app_data_by_name;
+use crate::loader::{get_app_data_by_name, list_apps};
 use alloc::sync::Arc;
+use crate::mm::{UserBuffer, translated_byte_buffer};
+pub fn sys_list(buf: *const u8, len: usize) -> isize {
+    let token = current_user_token();
+    let ub = UserBuffer::new(translated_byte_buffer(token, buf, len));
+    list_apps();
+    0
+}
 
 pub fn sys_exit(exit_code: i32) -> ! {
     exit_current_and_run_next(exit_code);
