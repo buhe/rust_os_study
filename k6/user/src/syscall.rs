@@ -9,6 +9,7 @@ const SYSCALL_GETPID: usize = 172;
 const SYSCALL_FORK: usize = 220;
 const SYSCALL_EXEC: usize = 221;
 const SYSCALL_WAITPID: usize = 260;
+const SYSCALL_LIST: usize = 261;
 
 fn syscall(id: usize, args: [usize; 3]) -> isize {
     let mut ret: isize;
@@ -21,6 +22,10 @@ fn syscall(id: usize, args: [usize; 3]) -> isize {
         );
     }
     ret
+}
+
+pub fn sys_list(buffer: &mut [u8]) -> isize {
+    syscall(SYSCALL_LIST, [buffer.as_mut_ptr() as usize, buffer.len(),0])
 }
 
 pub fn sys_close(fd: usize) -> isize {
