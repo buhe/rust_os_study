@@ -5,8 +5,10 @@ Rust implements operate system study code.
 - qemu tutorial reference: https://rcore-os.github.io/rCore-Tutorial-deploy/
 - k210 hardware tutorial reference: https://rcore-os.github.io/rCore-Tutorial-Book-v3
 - raspberry pi hardware tutorial reference: https://github.com/rust-embedded/rust-raspberrypi-OS-tutorials
+- micro kernel tutorial reference: https://rcore-os.github.io/zCore-Tutorial/
 
 ## To do list
-- [ ] k210 3 exercise
-- [ ] k210 5 exercise
+- [x] k210 log level
+- [ ] k210 stride scheduler
+- [ ] k210 spawn system call
 - [ ] k210 ps app

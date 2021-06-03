@@ -4,6 +4,9 @@ MODE := release
 KERNEL_ELF := target/$(TARGET)/$(MODE)/os
 KERNEL_BIN := $(KERNEL_ELF).bin
 DISASM_TMP := target/$(TARGET)/$(MODE)/asm
+FS_IMG := ../user/target/$(TARGET)/$(MODE)/fs.img
+SDCARD := /dev/disk2
+APPS := ../user/src/bin/*
 
 # BOARD
 BOARD ?= k210
@@ -28,6 +31,17 @@ OBJCOPY := rust-objcopy --binary-architecture=riscv64
 
 # Disassembly
 DISASM ?= -x
+
+sdcard: $(FS_IMG)
+	@echo "Are you sure write to $(SDCARD) ? [y/N] " && read ans && [ $${ans:-N} = y ]
+	@sudo dd if=/dev/zero of=$(SDCARD) bs=1048576 count=16
+	@sudo dd if=$(FS_IMG) of=$(SDCARD)
+
+$(FS_IMG): $(APPS)
+	@cd ../user && make build
+	@cd ../easy-fs-fuse && cargo run --$(MODE) -- -s ../user/src/bin/ -t ../user/target/$(TARGET)/$(MODE)/
+
+$(APPS):
 
 build: env $(KERNEL_BIN)
 
