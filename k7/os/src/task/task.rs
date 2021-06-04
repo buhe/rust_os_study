@@ -14,7 +14,7 @@ use alloc::vec;
 use alloc::vec::Vec;
 use alloc::string::String;
 use spin::{Mutex, MutexGuard};
-use crate::fs::{File, Stdin, Stdout};
+use crate::fs::{File, Stdin, Stdout, Stderrout};
 
 pub struct TaskControlBlock {
     // immutable
@@ -98,7 +98,7 @@ impl TaskControlBlock {
                     // 1 -> stdout
                     Some(Arc::new(Stdout)),
                     // 2 -> stderr
-                    Some(Arc::new(Stdout)),
+                    Some(Arc::new(Stderrout)),
                 ],
             }),
         };

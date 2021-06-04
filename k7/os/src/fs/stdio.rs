@@ -6,7 +6,7 @@ use crate::task::suspend_current_and_run_next;
 pub struct Stdin;
 
 pub struct Stdout;
-
+pub struct Stderrout;
 impl File for Stdin {
     fn readable(&self) -> bool { true }
     fn writable(&self) -> bool { false }
@@ -41,6 +41,20 @@ impl File for Stdout {
     fn write(&self, user_buf: UserBuffer) -> usize {
         for buffer in user_buf.buffers.iter() {
             print!("{}", core::str::from_utf8(*buffer).unwrap());
+        }
+        user_buf.len()
+    }
+}
+
+impl File for Stderrout {
+    fn readable(&self) -> bool { false }
+    fn writable(&self) -> bool { true }
+    fn read(&self, _user_buf: UserBuffer) -> usize{
+        panic!("Cannot read from stdout!");
+    }
+    fn write(&self, user_buf: UserBuffer) -> usize {
+        for buffer in user_buf.buffers.iter() {
+            error!("{}", core::str::from_utf8(*buffer).unwrap());
         }
         user_buf.len()
     }
