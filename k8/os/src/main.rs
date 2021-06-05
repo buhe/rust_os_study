@@ -24,6 +24,7 @@ mod trap;
 mod mm;
 mod fs;
 mod drivers;
+mod dtb;
 
 global_asm!(include_str!("entry.asm"));
 global_asm!(include_str!("link_app.S"));
@@ -37,7 +38,7 @@ fn clear_bss() {
 }
 
 #[no_mangle]
-pub fn rust_main() -> ! {
+pub fn rust_main(_hartid: usize, device_tree_paddr: usize) -> ! {
     extern "C" {
         fn stext();
         fn etext();
@@ -68,6 +69,7 @@ pub fn rust_main() -> ! {
     trap::init();
     trap::enable_timer_interrupt();
     timer::set_next_trigger();
+    dtb::init_dt(device_tree_paddr);
     fs::list_apps();
     task::add_initproc();
     debug!("after initproc!");
