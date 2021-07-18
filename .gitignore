@@ -1,3 +1,4 @@
 target/
 k2/os/src/link_app.S
 k3/os/src/link_app.S
+*.img
