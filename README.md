@@ -16,3 +16,6 @@ Rust implements operate system study code.
 - [x] k210 change standard error out different of standard out
 - [ ] k210 print device tree
 - [ ] raspberry r6 hardware pass
+- [ ] raspberry r7 hardware pass
+- [ ] raspberry r8 hardware pass
+- [ ] raspberry r9 hardware pass
