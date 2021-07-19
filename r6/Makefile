@@ -8,7 +8,7 @@ include ../utils/color.mk.in
 BSP ?= rpi3
 
 # Default to a serial device name that is common in Linux.
-DEV_SERIAL ?= /dev/ttyUSB0
+DEV_SERIAL ?= /dev/tty.usbserial-14110
 
 # Query the host system's kernel name
 UNAME_S = $(shell uname -s)
