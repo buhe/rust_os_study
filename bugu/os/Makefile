@@ -24,7 +24,7 @@ build: env $(KERNEL_BIN)
 
 env:
 	(rustup target list | grep "riscv64gc-unknown-none-elf (installed)") || rustup target add $(TARGET)
-	cargo install cargo-binutils
+	cargo install cargo-binutils 
 	rustup component add rust-src
 	rustup component add llvm-tools-preview
 
@@ -34,7 +34,7 @@ $(KERNEL_BIN): kernel
 kernel:
 	@echo Platform: $(BOARD)
 	@cp src/linker-$(BOARD).ld src/linker.ld
-	@cargo build --features ${LOG} --release
+	@cargo build --release
 	@rm src/linker.ld
 
 clean:
