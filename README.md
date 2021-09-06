@@ -19,7 +19,8 @@ Rust implements operate system study code.
 - [ ] raspberry r7 hardware pass
 - [ ] raspberry r8 hardware pass
 - [ ] raspberry r9 hardware pass
-- [x] bugu OS init
+- [x] bugu init
+- [x] bugu print
 - [ ] bugu memery manage
 - [ ] bugu task manage
 - [ ] bugu file system
