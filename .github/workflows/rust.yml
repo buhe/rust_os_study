@@ -35,7 +35,7 @@ jobs:
     #   working-directory: ./r2
     #   run: make build
     - name: Build bugu OS
-      working-directory: ./bugu
+      working-directory: ./bugu/os
       run: make build
     # - name: Build k3
     #   working-directory: ./k3/os
