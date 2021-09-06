@@ -32,7 +32,7 @@ $(KERNEL_BIN): kernel
 kernel:
 	@echo Platform: $(BOARD)
 	@cp src/linker-$(BOARD).ld src/linker.ld
-	@cargo build --release
+	@cargo build --features ${LOG} --release
 	@rm src/linker.ld
 
 clean:
