@@ -24,3 +24,4 @@ Rust implements operate system study code.
 - [ ] bugu memery manage
 - [ ] bugu task manage
 - [ ] bugu file system
+- [ ] bugu switch rust SBI to ns16550a
