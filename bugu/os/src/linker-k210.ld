@@ -1,5 +1,5 @@
 OUTPUT_ARCH(riscv)
-ENTRY(_start)
+ENTRY(_start2)
 BASE_ADDRESS = 0x80020000;
 
 SECTIONS
@@ -9,7 +9,7 @@ SECTIONS
 
     stext = .;
     .text : {
-        *(.text.entry)
+        *(.text.entry1)
         *(.text .text.*)
     }
 
@@ -42,7 +42,7 @@ SECTIONS
     ebss = .;
     ekernel = .;
     bugu = .;
-    
+
     /DISCARD/ : {
         *(.eh_frame)
     }

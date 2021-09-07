@@ -35,7 +35,7 @@ pub fn rust_main() -> ! {
         fn bugu();
     }
     clear_bss();
-    println!("Hello, world!");
+    println!("Hello, world!223");
     info!(".text [{:#x}, {:#x})", stext as usize, etext as usize);
     error!(".rodata [{:#x}, {:#x})", srodata as usize, erodata as usize);
     debug!(".data [{:#x}, {:#x})", sdata as usize, edata as usize);
