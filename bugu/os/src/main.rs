@@ -32,6 +32,7 @@ pub fn rust_main() -> ! {
         fn ebss();
         fn boot_stack();
         fn boot_stack_top();
+        fn bugu();
     }
     clear_bss();
     println!("Hello, world!");
@@ -43,5 +44,6 @@ pub fn rust_main() -> ! {
         boot_stack as usize, boot_stack_top as usize
     );
     warn!(".bss [{:#x}, {:#x})", sbss as usize, ebss as usize);
+    info!("bugu is here {:#x}", bugu as usize);
     panic!("Shutdown machine!");
 }

@@ -41,7 +41,8 @@ SECTIONS
     . = ALIGN(4K);
     ebss = .;
     ekernel = .;
-
+    bugu = .;
+    
     /DISCARD/ : {
         *(.eh_frame)
     }
