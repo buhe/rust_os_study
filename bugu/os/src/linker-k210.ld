@@ -1,5 +1,5 @@
 OUTPUT_ARCH(riscv)
-ENTRY(_start2)
+/* ENTRY(_start3) */
 BASE_ADDRESS = 0x80020000;
 
 SECTIONS
