@@ -1,6 +1,6 @@
     .section .text.entry1
-    .globl _start2
-_start2:
+    .globl _start
+_start:
     la sp, boot_stack_top
     call rust_main
 
