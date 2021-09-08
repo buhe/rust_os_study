@@ -22,7 +22,7 @@ Rust implements operate system study code.
 - [x] bugu init
 - [x] bugu print
 - [x] bugu function context
-- [ ] bugu user app
+- [ ] bugu load and execute user app
 - [ ] bugu memery manage
 - [ ] bugu task manage
 - [ ] bugu file system
