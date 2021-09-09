@@ -25,7 +25,7 @@ pub fn trap_handler(cx: &mut TrapContext) -> &mut TrapContext {
     let stval = stval::read();
     match scause.cause() {
         Trap::Exception(Exception::UserEnvCall) => {
-            let range = get_current_app_mem_range();
+            // let range = get_current_app_mem_range();
             // debug!("current app range is = {:x} : {:x}", range.0, range.1);
             cx.sepc += 4;
             cx.x[10] = syscall(cx.x[17], [cx.x[10], cx.x[11], cx.x[12]]) as usize;
