@@ -9,7 +9,7 @@ mod syscall;
 mod lang_items;
 
 #[no_mangle]
-#[link_section = ".text.entry"]
+#[link_section = ".text.entry2"]
 pub extern "C" fn _start() -> ! {
     clear_bss();
     exit(main());
