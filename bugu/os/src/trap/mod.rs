@@ -24,6 +24,7 @@ pub fn trap_handler(cx: &mut TrapContext) -> &mut TrapContext {
     let scause = scause::read();
     let stval = stval::read();
     match scause.cause() {
+        // 嵌套匹配
         Trap::Exception(Exception::UserEnvCall) => {
             // let range = get_current_app_mem_range();
             // debug!("current app range is = {:x} : {:x}", range.0, range.1);
