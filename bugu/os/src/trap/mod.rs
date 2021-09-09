@@ -1,6 +1,6 @@
 mod context;
 
-use crate::batch::{run_next_app, get_current_app_mem_range};
+use crate::batch::{run_next_app};
 use crate::syscall::syscall;
 use riscv::register::{
     mtvec::TrapMode,
