@@ -29,4 +29,4 @@ Rust implements operate system study code.
 - [ ] bugu file system
 - [ ] bugu switch rust SBI to ns16550a
 - [ ] bugu wifi use esp8266
-- [ ] bugu lcd
+- [ ] bugu lcd nt35310 over SPI drive
