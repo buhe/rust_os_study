@@ -25,6 +25,7 @@ Rust implements operate system study code.
 - [x] bugu load and execute user app
 - [ ] bugu switch takes
 - [ ] bugu memery manage
+- [ ] bugu dynamic memery
 - [ ] bugu task manage
 - [ ] bugu file system
 - [ ] bugu switch rust SBI to ns16550a
